@@ -53,7 +53,7 @@
     {
         float dist = length(i.uv_scr - 0.5);
         float wave = sin(dist * 40);
-        float2 uv = (i.uv_scr - 0.5) * (1 + wave * 0.04) + 0.5;
+        float2 uv = (i.uv_scr - 0.5) * (1 + wave * 0.06) + 0.5;
         uv = UnityStereoScreenSpaceUVAdjust(uv, _MainTex_ST);
         return tex2D(_MainTex, uv);
     }
