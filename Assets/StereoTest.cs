@@ -7,6 +7,12 @@ public class StereoTest : MonoBehaviour
 
     Material _material;
 
+    void OnEnable()
+    {
+        GetComponent<Camera>().depthTextureMode |=
+            DepthTextureMode.Depth | DepthTextureMode.DepthNormals;
+    }
+
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (_material == null)
@@ -20,7 +26,8 @@ public class StereoTest : MonoBehaviour
 
         Graphics.Blit(source, temp1, _material, 0);
         Graphics.Blit(temp1, temp2, _material, 1);
-        Graphics.Blit(temp2, destination, _material, 2);
+        Graphics.Blit(temp2, temp1, _material, 2);
+        Graphics.Blit(temp1, destination, _material, 3);
 
         RenderTexture.ReleaseTemporary(temp1);
         RenderTexture.ReleaseTemporary(temp2);

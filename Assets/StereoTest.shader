@@ -13,6 +13,9 @@
     float4 _MainTex_TexelSize;
     half4 _MainTex_ST;
 
+    sampler2D_float _CameraDepthTexture;
+    sampler2D _CameraDepthNormalsTexture;
+
     struct v2f_img2
     {
         float4 pos : SV_POSITION;
@@ -49,6 +52,19 @@
         return (s1 + s2 + s3 + s4) / 2;
     }
 
+    fixed4 frag_depth(v2f_img2 i) : SV_Target
+    {
+        float z;
+        float3 normal;
+        DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, i.uv_tex), z, normal);
+
+        z = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_tex);
+        z = Linear01Depth(z);
+
+        fixed4 src = tex2D(_MainTex, i.uv_tex);
+        return lerp(src, float4(normal, 1), z);
+    }
+
     fixed4 frag_distortion(v2f_img2 i) : SV_Target
     {
         float dist = length(i.uv_scr - 0.5);
@@ -75,6 +91,13 @@
             CGPROGRAM
             #pragma vertex vert_img2
             #pragma fragment frag_blur
+            ENDCG
+        }
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert_img2
+            #pragma fragment frag_depth
             ENDCG
         }
         Pass
